@@ -1,6 +1,12 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { ExamRecord, ExamsDB } from '@/lib/types';
 
 type StatusType = 'idle' | 'loading' | 'ok' | 'error';
@@ -16,23 +22,17 @@ async function sha256(value: string) {
 export default function ScheduleLookup() {
   const [studentId, setStudentId] = useState('');
   const [status, setStatus] = useState<{ type: StatusType; message: string }>({ type: 'idle', message: '' });
-  const [exams, setExams] = useState<ExamRecord[] | null>(null);
+  const [records, setRecords] = useState<ExamRecord[] | null>(null);
   const [submittedId, setSubmittedId] = useState('');
   const [db, setDb] = useState<ExamsDB | null>(null);
-
-  const statusClass = useMemo(() => {
-    if (status.type === 'ok') return 'status ok';
-    if (status.type === 'error') return 'status error';
-    if (status.type === 'loading') return 'status loading';
-    return 'status';
-  }, [status.type]);
 
   async function getDB() {
     if (db) return db;
     setStatus({ type: 'loading', message: 'Loading schedule data…' });
+
     const response = await fetch('/data.json');
     if (!response.ok) {
-      throw new Error('Could not load schedule data');
+      throw new Error('Could not load schedule data.');
     }
 
     const parsed = (await response.json()) as ExamsDB;
@@ -40,95 +40,102 @@ export default function ScheduleLookup() {
     return parsed;
   }
 
-  async function handleLookup(event: FormEvent) {
+  async function handleLookup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const normalized = studentId.trim();
     if (!normalized) {
       setStatus({ type: 'error', message: 'Please enter your student ID.' });
-      setExams(null);
+      setRecords(null);
       return;
     }
 
     try {
       const loaded = await getDB();
       const hash = await sha256(normalized);
-      const result = loaded[hash] ?? [];
+      const exams = loaded[hash] ?? [];
 
-      if (!result.length) {
+      if (exams.length === 0) {
         setStatus({ type: 'error', message: `No exams found for ID "${normalized}". Double-check and try again.` });
-        setExams(null);
+        setRecords(null);
         return;
       }
 
       setSubmittedId(normalized);
-      setExams(result);
-      setStatus({ type: 'ok', message: `Found ${result.length} exam${result.length > 1 ? 's' : ''}.` });
+      setRecords(exams);
+      setStatus({ type: 'ok', message: `Found ${exams.length} exam${exams.length > 1 ? 's' : ''}.` });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       setStatus({ type: 'error', message: `Error: ${message}` });
-      setExams(null);
+      setRecords(null);
     }
   }
 
   return (
-    <>
-      <div className="card">
-        <form className="inputRow" onSubmit={handleLookup}>
-          <input
-            aria-label="Student ID"
-            type="text"
-            maxLength={20}
-            autoComplete="off"
-            spellCheck={false}
-            value={studentId}
-            onChange={(event) => setStudentId(event.target.value)}
-            placeholder="e.g. 221000002"
-          />
-          <button type="submit">Look up →</button>
-        </form>
-        <p className={statusClass} role="status" aria-live="polite">
-          {status.message}
-        </p>
-      </div>
+    <section className="mt-6 space-y-6">
+      <Card>
+        <CardContent className="pt-6">
+          <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleLookup}>
+            <Input
+              aria-label="Student ID"
+              placeholder="e.g. 221000002"
+              maxLength={20}
+              autoComplete="off"
+              spellCheck={false}
+              value={studentId}
+              onChange={(event) => setStudentId(event.target.value)}
+            />
+            <Button type="submit">Look up</Button>
+          </form>
 
-      {exams && (
-        <div className="results">
-          <div className="resultsHeader">
-            <span className="resultTitle">
-              Schedule for <strong>{submittedId}</strong>
-            </span>
-            <span className="badge">{exams.length} EXAM{exams.length > 1 ? 'S' : ''}</span>
-          </div>
-          <div className="tableWrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Course</th>
-                  <th>Date &amp; Time</th>
-                  <th>Room</th>
-                </tr>
-              </thead>
-              <tbody>
-                {exams.map((exam, index) => (
-                  <tr key={`${exam.course}-${exam.date}-${exam.time}-${exam.room}`}>
-                    <td>{String(index + 1).padStart(2, '0')}</td>
-                    <td>
-                      <span className="coursePill">{exam.course}</span>
-                    </td>
-                    <td>
+          <p
+            className="mt-3 min-h-5 text-sm text-muted-foreground"
+            role="status"
+            aria-live="polite"
+            data-state={status.type}
+          >
+            {status.message}
+          </p>
+        </CardContent>
+      </Card>
+
+      {records && (
+        <Card>
+          <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <CardTitle className="text-lg">
+              Schedule for <span className="text-foreground/80">{submittedId}</span>
+            </CardTitle>
+            <Badge variant="secondary">
+              {records.length} EXAM{records.length > 1 ? 'S' : ''}
+            </Badge>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>#</TableHead>
+                  <TableHead>Course</TableHead>
+                  <TableHead>Date &amp; Time</TableHead>
+                  <TableHead>Room</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {records.map((exam, index) => (
+                  <TableRow key={`${exam.course}-${exam.date}-${exam.time}-${exam.room}`}>
+                    <TableCell>{String(index + 1).padStart(2, '0')}</TableCell>
+                    <TableCell>{exam.course}</TableCell>
+                    <TableCell>
                       <div>{exam.date}</div>
-                      <small>{exam.time}</small>
-                    </td>
-                    <td>{exam.room}</td>
-                  </tr>
+                      <div className="text-muted-foreground">{exam.time}</div>
+                    </TableCell>
+                    <TableCell>{exam.room}</TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       )}
-    </>
+    </section>
   );
 }

@@ -165,3 +165,16 @@ This will reduce manual errors and support future terms safely.
 ## 10) Final Assessment
 
 This project is a strong practical solution for a real student pain point: it is simple, elegant, and effective. Its biggest structural risk is not UI or performance, but privacy/security model (publishing full hashed dataset client-side). If the project remains small and community-trusted, it can still be useful; if it is expected to scale or become official, a server-side lookup architecture is strongly recommended.
+
+---
+
+## 11) Component Color Audit (Next.js + shadcn/ui Migration)
+
+A full component audit was applied after migration to Next.js 16.2.1 and shadcn/ui patterns:
+
+- `app/page.tsx`: uses only shadcn components + Tailwind semantic tokens; no hex/rgb hard-coded values in JSX.
+- `components/schedule-lookup.tsx`: all styling uses utility classes tied to design tokens (`bg-background`, `text-foreground`, `text-muted-foreground`, etc.); no hard-coded colors in component logic.
+- `components/theme-toggle.tsx`: uses shadcn `Button` variants and icon components only.
+- `components/ui/*`: shadcn primitive wrappers rely on semantic token classes, not direct color literals.
+
+Color values are centralized in `app/globals.css` as CSS variables for both light and dark themes (Vercel-like neutral palette). This keeps all color decisions in one token source and avoids color drift across components.

@@ -1,34 +1,33 @@
-# Nile University Exams Schedules (Next.js)
+# Nile University Exams Schedules (Next.js 16.2.1)
 
-Yes — this project can be turned into a Next.js app, and this repository now includes that migration.
+This project is now migrated to **Next.js 16.2.1** with a **shadcn/ui-only component approach** and a **Vercel-style light/dark design system**.
 
-## What changed
-- Migrated from a single static `index.html` page to a **Next.js App Router** structure.
-- Preserved the same lookup behavior:
-  - Student ID is normalized (`trim + lowercase`).
-  - SHA-256 hash is computed in-browser.
-  - Data is fetched from `public/data.json`.
-  - Matching exams are rendered in a table.
+## What is included
+- Next.js App Router application (`app/`)
+- shadcn/ui-based interface components (`components/ui/`)
+- Light and dark theme switching via `next-themes`
+- Design tokens defined in CSS variables (no hard-coded colors inside React components)
+- Client-side SHA-256 student lookup logic preserved
 
-## Project structure
-- `app/page.tsx` → main page.
-- `components/schedule-lookup.tsx` → client-side lookup UI and logic.
-- `app/globals.css` → styling.
-- `public/data.json` → hashed schedule database.
+## Core files
+- `app/page.tsx` → page composition using shadcn components
+- `components/schedule-lookup.tsx` → lookup form + results table
+- `components/theme-toggle.tsx` / `components/theme-provider.tsx` → theme handling
+- `app/globals.css` → Vercel-like tokenized theme variables
+- `public/data.json` → hashed schedule database
 
 ## Run locally
 ```bash
 npm install
 npm run dev
 ```
-Then open `http://localhost:3000`.
 
-## Build for production
+## Build
 ```bash
 npm run build
 npm run start
 ```
 
 ## Notes
-- The old static files (`index.html`, root `data.json`) are still kept for reference/backward compatibility.
-- For better privacy at scale, consider moving lookup to a server/API route so the entire dataset is not distributed to every browser.
+- Root `data.json` and `index.html` are retained for backward compatibility/reference.
+- For stronger privacy, consider server-side lookup so the full dataset is not downloaded by every client.

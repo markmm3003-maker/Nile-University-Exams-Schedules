@@ -1,175 +1,58 @@
-:root {
-  --bg: #0b0f1a;
-  --surface: #111827;
-  --border: #1e2d45;
-  --accent: #3b82f6;
-  --accent2: #06b6d4;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
-  --error: #ef4444;
-  --success: #10b981;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-* {
-  box-sizing: border-box;
-}
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --radius: 0.625rem;
+  }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
-}
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+  }
 
-.wrapper {
-  width: min(860px, 100%);
-  margin: 0 auto;
-  padding: 3rem 1rem 4rem;
-}
+  * {
+    @apply border-border;
+  }
 
-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.label {
-  color: var(--muted);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-size: 0.74rem;
-}
-
-h1 {
-  margin: 0.8rem 0 0.5rem;
-  font-size: clamp(2rem, 5vw, 3.4rem);
-}
-
-.subtitle {
-  color: var(--muted);
-  margin: 0;
-}
-
-.cautionBanner,
-.card,
-.results {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 1.2rem;
-}
-
-.cautionBanner {
-  margin-bottom: 1rem;
-}
-
-.cautionBanner h2 {
-  margin: 0 0 0.5rem;
-  color: #fbbf24;
-  font-size: 0.95rem;
-}
-
-.cautionBanner p {
-  margin: 0;
-  color: #fde68a;
-  line-height: 1.5;
-}
-
-.inputRow {
-  display: flex;
-  gap: 0.7rem;
-}
-
-.inputRow input {
-  flex: 1;
-  min-width: 120px;
-  padding: 0.82rem 0.9rem;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #0f172a;
-  color: var(--text);
-}
-
-.inputRow button {
-  border: none;
-  border-radius: 10px;
-  background: var(--accent);
-  color: white;
-  padding: 0.8rem 1.2rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.status {
-  margin: 0.75rem 0 0;
-  min-height: 1.2rem;
-  color: var(--muted);
-}
-
-.status.ok {
-  color: var(--success);
-}
-
-.status.error {
-  color: var(--error);
-}
-
-.results {
-  margin-top: 1rem;
-}
-
-.resultsHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.8rem;
-}
-
-.badge {
-  border: 1px solid rgba(59, 130, 246, 0.28);
-  background: rgba(59, 130, 246, 0.1);
-  color: var(--accent2);
-  border-radius: 999px;
-  padding: 0.2rem 0.65rem;
-  font-size: 0.76rem;
-}
-
-.resultTitle strong {
-  color: var(--accent2);
-}
-
-.tableWrap {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  text-align: left;
-  padding: 0.7rem;
-  border-bottom: 1px solid var(--border);
-}
-
-tr:last-child td {
-  border-bottom: none;
-}
-
-.coursePill {
-  border: 1px solid rgba(6, 182, 212, 0.25);
-  color: var(--accent2);
-  background: rgba(6, 182, 212, 0.1);
-  border-radius: 6px;
-  font-size: 0.84rem;
-  padding: 0.2rem 0.5rem;
-}
-
-@media (max-width: 640px) {
-  .inputRow {
-    flex-direction: column;
+  body {
+    @apply bg-background text-foreground antialiased;
   }
 }
